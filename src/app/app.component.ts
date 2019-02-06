@@ -7,97 +7,120 @@ import { AgGridNg2 } from "ag-grid-angular";
   styleUrls: ["./app.component.css"]
 })
 export class AppComponent implements OnInit {
+  // export class AppComponent {
   @ViewChild("agGrid") agGrid: AgGridNg2;
 
   title = "my-ag-grid-table-demo";
+  private gridApi;
+  private gridColumnApi;
 
-  // new agGrid.Grid(gridDiv, gridOptions);
+  private columnDefs;
+  private autoGroupColumnDef;
+  private defaultColDef;
+  private rowSelection;
+  private rowGroupPanelShow;
+  private pivotPanelShow;
+  private rowData: any;
 
-  //   columnDefs = [
-  //     {headerName: "Athlete", field: "athlete", width: 150, filterParams:{newRowsAction: 'keep'},
-  //         checkboxSelection: function (params) {
-  //             // we put checkbox on the name if we are not doing grouping
-  //             return params.columnApi.getRowGroupColumns().length === 0;
-  //         },
-  //         headerCheckboxSelection: function (params) {
-  //             // we put checkbox on the name if we are not doing grouping
-  //             return params.columnApi.getRowGroupColumns().length === 0;
-  //         }
-  //     },
-  //     {headerName: "Age", field: "age", width: 90, filterParams:{newRowsAction: 'keep'}},
-  //     {headerName: "Country", field: "country", width: 120, filterParams:{newRowsAction: 'keep'}},
-  //     {headerName: "Year", field: "year", width: 90, filterParams:{newRowsAction: 'keep'}},
-  //     {headerName: "Date", field: "date", width: 110, filterParams:{newRowsAction: 'keep'}},
-  //     {headerName: "Sport", field: "sport", width: 110, filterParams:{newRowsAction: 'keep'}},
-  //     {headerName: "Gold", field: "gold", width: 100, filterParams:{newRowsAction: 'keep'}},
-  //     {headerName: "Silver", field: "silver", width: 100, filterParams:{newRowsAction: 'keep'}},
-  //     {headerName: "Bronze", field: "bronze", width: 100, filterParams:{newRowsAction: 'keep'}},
-  //     {headerName: "Total", field: "total", width: 100, filterParams:{newRowsAction: 'keep'}}
-  // ];
-  //   autoGroupColumnDef = {
-  //     headerName: "Group",
-  //     width: 10,
-  //     field: 'athlete',
-  //     valueGetter: function(params) {
-  //         if (params.node.group) {
-  //             return params.node.key;
-  //         } else {
-  //             return params.data[params.colDef.field];
-  //         }
-  //     },
-  //     headerCheckboxSelection: true,
-  //     // headerCheckboxSelectionFilteredOnly: true,
-  //     cellRenderer:'agGroupCellRenderer',
-  //     cellRendererParams: {
-  //         checkbox: true
-  //     }
-  // };
+  constructor(private http: HttpClient) {
+    this.columnDefs = [
+      {
+        headerName: "Athlete",
+        field: "athlete",
+        sortable: true,
+        filter: true,
+        checkboxSelection: function(params) {
+          return params.columnApi.getRowGroupColumns().length === 0;
+        },
+        headerCheckboxSelection: function(params) {
+          return params.columnApi.getRowGroupColumns().length === 0;
+        },
+        resizable: true
+      },
+      {
+        headerName: "Age",
+        field: "age",
+        sortable: true,
+        filter: true
+      },
+      {
+        headerName: "Country",
+        field: "country",
+        sortable: true,
+        filter: true
+      },
+      {
+        headerName: "Sport",
+        field: "sport",
+        sortable: true,
+        filter: true
+      },
+      {
+        headerName: "Year",
+        field: "year",
+        sortable: true,
+        filter: true
+      },
+      {
+        headerName: "Date",
+        field: "date",
+        sortable: true,
+        filter: true
+      },
+      {
+        headerName: "Gold",
+        field: "gold",
+        sortable: true,
+        filter: true
+      },
+      {
+        headerName: "Silver",
+        field: "silver",
+        sortable: true,
+        filter: true
+      },
+      {
+        headerName: "Bronze",
+        field: "bronze",
+        sortable: true,
+        filter: true
+      },
+      {
+        headerName: "Total",
+        field: "total",
+        sortable: true,
+        filter: true
+      }
+    ];
 
-  //   gridOptions = {
-  //     defaultColDef:{
-  //         editable: true,
-  //         enableRowGroup:true,
-  //         enablePivot:true,
-  //         enableValue:true,
-  //         sortable:true,
-  //         resizable: true,
-  //         filter: true
-  //     },
-  //     suppressRowClickSelection: true,
-  //     groupSelectsChildren: true,
-  //     debug: true,
-  //     rowSelection: 'multiple',
-  //     rowGroupPanelShow: 'always',
-  //     pivotPanelShow: 'always',
-  //     enableRangeSelection: true,
-  //     columnDefs: this.columnDefs,
-  //     pagination: true,
-  //     autoGroupColumnDef: this.autoGroupColumnDef
-  // };
-
-  ////////////////////////////////////////
-  columnDefs = [
-    {
-      headerName: "Athlete",
+    this.autoGroupColumnDef = {
+      headerName: "Group",
+      width: 200,
       field: "athlete",
+      valueGetter: function(params) {
+        if (params.node.group) {
+          return params.node.key;
+        } else {
+          return params.data[params.colDef.field];
+        }
+      },
+      headerCheckboxSelection: true,
+      cellRenderer: "agGroupCellRenderer",
+      cellRendererParams: { checkbox: true }
+    };
+    this.defaultColDef = {
+      editable: true,
+      enableRowGroup: true,
+      enablePivot: true,
+      enableValue: true,
       sortable: true,
-      filter: true,
-      checkboxSelection: true,
-      pagination: true
-    },
-    { headerName: "Age", field: "age", sortable: true, filter: true },
-    { headerName: "Country", field: "country", sortable: true, filter: true },
-    { headerName: "Sport", field: "sport", sortable: true, filter: true },
-    { headerName: "Year", field: "year", sortable: true, filter: true },
-    { headerName: "Date", field: "date", sortable: true, filter: true },
-    { headerName: "Gold", field: "gold", sortable: true, filter: true },
-    { headerName: "Silver", field: "silver", sortable: true, filter: true },
-    { headerName: "Bronze", field: "bronze", sortable: true, filter: true },
-    { headerName: "Total", field: "total", sortable: true, filter: true }
-  ];
-
-  rowData: any;
-  constructor(private http: HttpClient) {}
+      resizable: true,
+      filter: true
+    };
+    this.rowSelection = "multiple";
+    this.rowGroupPanelShow = "always";
+    this.pivotPanelShow = "always";
+  }
 
   ngOnInit() {
     // this.rowData = this.http.get("https://api.myjson.com/bins/15psn9");
@@ -115,12 +138,6 @@ export class AppComponent implements OnInit {
       .join(", ");
     alert(`Selected nodes: ${selectedDataStringPresentation}`);
   }
-
-  // rowData = [
-  //     { make: 'Toyota', model: 'Celica', price: 35000 },
-  //     { make: 'Ford', model: 'Mondeo', price: 32000 },
-  //     { make: 'Porsche', model: 'Boxter', price: 72000 }
-  // ];
 }
 
 // onclick(dataa){
