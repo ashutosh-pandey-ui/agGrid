@@ -1,0 +1,24 @@
+<!--The content below is only a placeholder and can be replaced.-->
+<div style="text-align:center">
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
+</div>
+<button (click)="getSelectedRows()">Get Selected Rows</button>
+<ag-grid-angular 
+    #agGrid
+    style="width: 1000px; height: 500px;" 
+    class="ag-theme-balham"
+    [rowData]="rowData | async"
+    [columnDefs]="columnDefs"
+    [pagination]="true"
+    rowSelection="multiple"
+    >
+</ag-grid-angular>
+<!-- <input type="text" name="username" [(ngModel)]="addnewData['username']">
+<input type="text" name="password" [(ngModel)]="addnewData['password']">
+<button type="button" name="username" (click)="onclick(addnewData)"> -->
+
+
+
+<router-outlet></router-outlet>
